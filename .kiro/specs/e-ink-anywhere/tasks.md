@@ -10,4 +10,4 @@
 - [x] Deploy to a public static URL (GitHub Pages) — https://wuyinyuanye.github.io/e-ink-anywhere/
 - [x] Record a <3 min demo video and publish on YouTube — https://www.youtube.com/watch?v=_5ZKxVcVvJU
 - [ ] Write the build blog post (mention Kiroween 2026) and the #KiroweenHackathon26 social post
-- [ ] Submit on Devpost before Dec 4, 2026 2:00 pm PT
+- [x] Submit on Devpost before Dec 4, 2026 2:00 pm PT — submitted 2026-11-11, https://devpost.com/software/e-ink-anywhere
