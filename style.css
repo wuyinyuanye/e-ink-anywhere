@@ -7,7 +7,7 @@ html { -webkit-text-size-adjust: 100%; }
 body {
   background: #fff;
   color: #000;
-  font-family: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Times New Roman", Georgia, serif;
+  font-family: Georgia, "Times New Roman", "Noto Serif SC", "Songti SC", serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }

@@ -15,81 +15,83 @@ const FETCH_TIMEOUT = 10 * 1000;
 
 // ---------- static tables ----------
 
-// WMO weather codes -> short Chinese labels (Open-Meteo `weather_code`).
+// WMO weather codes -> short English labels (Open-Meteo `weather_code`).
 const WEATHER_CODES = {
-  0: "晴", 1: "晴间多云", 2: "多云", 3: "阴",
-  45: "雾", 48: "雾凇",
-  51: "小毛毛雨", 53: "毛毛雨", 55: "大毛毛雨", 56: "冻毛毛雨", 57: "冻毛毛雨",
-  61: "小雨", 63: "中雨", 65: "大雨", 66: "冻雨", 67: "冻雨",
-  71: "小雪", 73: "中雪", 75: "大雪", 77: "雪粒",
-  80: "阵雨", 81: "阵雨", 82: "暴雨", 85: "阵雪", 86: "大阵雪",
-  95: "雷阵雨", 96: "雷阵雨伴冰雹", 99: "强雷阵雨伴冰雹"
+  0: "Clear", 1: "Mostly clear", 2: "Partly cloudy", 3: "Overcast",
+  45: "Fog", 48: "Rime fog",
+  51: "Light drizzle", 53: "Drizzle", 55: "Heavy drizzle", 56: "Freezing drizzle", 57: "Freezing drizzle",
+  61: "Light rain", 63: "Rain", 65: "Heavy rain", 66: "Freezing rain", 67: "Freezing rain",
+  71: "Light snow", 73: "Snow", 75: "Heavy snow", 77: "Snow grains",
+  80: "Showers", 81: "Showers", 82: "Violent showers", 85: "Snow showers", 86: "Heavy snow showers",
+  95: "Thunderstorm", 96: "Thunderstorm with hail", 99: "Severe thunderstorm with hail"
 };
 
-// Cities selectable with ?city=<key> (or the Chinese name). Default: shanghai.
+// Cities selectable with ?city=<key> (or the city name). Default: shanghai.
 const DEFAULT_CITY = "shanghai";
 const CITIES = {
-  shanghai:      { name: "上海", lat: 31.23, lon: 121.47 },
-  beijing:       { name: "北京", lat: 39.90, lon: 116.41 },
-  guangzhou:     { name: "广州", lat: 23.13, lon: 113.26 },
-  shenzhen:      { name: "深圳", lat: 22.54, lon: 114.06 },
-  hangzhou:      { name: "杭州", lat: 30.27, lon: 120.16 },
-  nanjing:       { name: "南京", lat: 32.06, lon: 118.80 },
-  chengdu:       { name: "成都", lat: 30.57, lon: 104.07 },
-  chongqing:     { name: "重庆", lat: 29.56, lon: 106.55 },
-  wuhan:         { name: "武汉", lat: 30.59, lon: 114.31 },
-  xian:          { name: "西安", lat: 34.34, lon: 108.94 },
-  tianjin:       { name: "天津", lat: 39.34, lon: 117.36 },
-  hongkong:      { name: "香港", lat: 22.32, lon: 114.17 },
-  taipei:        { name: "台北", lat: 25.03, lon: 121.57 },
-  tokyo:         { name: "东京", lat: 35.68, lon: 139.69 },
-  seoul:         { name: "首尔", lat: 37.57, lon: 126.98 },
-  singapore:     { name: "新加坡", lat: 1.35, lon: 103.82 },
-  london:        { name: "伦敦", lat: 51.51, lon: -0.13 },
-  newyork:       { name: "纽约", lat: 40.71, lon: -74.01 },
-  sanfrancisco:  { name: "旧金山", lat: 37.77, lon: -122.42 }
+  shanghai:      { name: "Shanghai", lat: 31.23, lon: 121.47 },
+  beijing:       { name: "Beijing", lat: 39.90, lon: 116.41 },
+  guangzhou:     { name: "Guangzhou", lat: 23.13, lon: 113.26 },
+  shenzhen:      { name: "Shenzhen", lat: 22.54, lon: 114.06 },
+  hangzhou:      { name: "Hangzhou", lat: 30.27, lon: 120.16 },
+  nanjing:       { name: "Nanjing", lat: 32.06, lon: 118.80 },
+  chengdu:       { name: "Chengdu", lat: 30.57, lon: 104.07 },
+  chongqing:     { name: "Chongqing", lat: 29.56, lon: 106.55 },
+  wuhan:         { name: "Wuhan", lat: 30.59, lon: 114.31 },
+  xian:          { name: "Xi'an", lat: 34.34, lon: 108.94 },
+  tianjin:       { name: "Tianjin", lat: 39.34, lon: 117.36 },
+  hongkong:      { name: "Hong Kong", lat: 22.32, lon: 114.17 },
+  taipei:        { name: "Taipei", lat: 25.03, lon: 121.57 },
+  tokyo:         { name: "Tokyo", lat: 35.68, lon: 139.69 },
+  seoul:         { name: "Seoul", lat: 37.57, lon: 126.98 },
+  singapore:     { name: "Singapore", lat: 1.35, lon: 103.82 },
+  london:        { name: "London", lat: 51.51, lon: -0.13 },
+  newyork:       { name: "New York", lat: 40.71, lon: -74.01 },
+  sanfrancisco:  { name: "San Francisco", lat: 37.77, lon: -122.42 }
 };
 
-const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+  "August", "September", "October", "November", "December"];
 
 const FALLBACK_NEWS = [
-  "新闻源暂时连不上，本页每 15 分钟会自动重试。",
-  "（本地备用）墨水屏看板讲究慢：新闻不必实时，隔一阵看一眼就够。",
-  "（本地备用）放下手机，抬头看看窗外的天气。"
+  "News feed is temporarily unreachable. This page retries every 15 minutes.",
+  "(Local fallback) E-ink boards are meant to be slow: news need not be live, a glance now and then is enough.",
+  "(Local fallback) Put down the phone and look out the window at the weather."
 ];
 
 const POEMS = [
-  { lines: ["床前明月光，疑是地上霜。", "举头望明月，低头思故乡。"], from: "李白《静夜思》" },
-  { lines: ["春眠不觉晓，处处闻啼鸟。", "夜来风雨声，花落知多少。"], from: "孟浩然《春晓》" },
-  { lines: ["空山不见人，但闻人语响。", "返景入深林，复照青苔上。"], from: "王维《鹿柴》" },
-  { lines: ["白日依山尽，黄河入海流。", "欲穷千里目，更上一层楼。"], from: "王之涣《登鹳雀楼》" },
-  { lines: ["离离原上草，一岁一枯荣。", "野火烧不尽，春风吹又生。"], from: "白居易《赋得古原草送别》" },
-  { lines: ["千山鸟飞绝，万径人踪灭。", "孤舟蓑笠翁，独钓寒江雪。"], from: "柳宗元《江雪》" },
-  { lines: ["葡萄美酒夜光杯，欲饮琵琶马上催。", "醉卧沙场君莫笑，古来征战几人回。"], from: "王翰《凉州词》" },
-  { lines: ["红豆生南国，春来发几枝。", "愿君多采撷，此物最相思。"], from: "王维《相思》" },
-  { lines: ["鹅，鹅，鹅，曲项向天歌。", "白毛浮绿水，红掌拨清波。"], from: "骆宾王《咏鹅》" },
-  { lines: ["锄禾日当午，汗滴禾下土。", "谁知盘中餐，粒粒皆辛苦。"], from: "李绅《悯农》" },
-  { lines: ["慈母手中线，游子身上衣。", "临行密密缝，意恐迟迟归。", "谁言寸草心，报得三春晖。"], from: "孟郊《游子吟》" },
-  { lines: ["草长莺飞二月天，拂堤杨柳醉春烟。", "儿童散学归来早，忙趁东风放纸鸢。"], from: "高鼎《村居》" },
-  { lines: ["两个黄鹂鸣翠柳，一行白鹭上青天。", "窗含西岭千秋雪，门泊东吴万里船。"], from: "杜甫《绝句》" },
-  { lines: ["日照香炉生紫烟，遥看瀑布挂前川。", "飞流直下三千尺，疑是银河落九天。"], from: "李白《望庐山瀑布》" },
-  { lines: ["朝辞白帝彩云间，千里江陵一日还。", "两岸猿声啼不住，轻舟已过万重山。"], from: "李白《早发白帝城》" },
-  { lines: ["故人西辞黄鹤楼，烟花三月下扬州。", "孤帆远影碧空尽，唯见长江天际流。"], from: "李白《黄鹤楼送孟浩然之广陵》" },
-  { lines: ["月落乌啼霜满天，江枫渔火对愁眠。", "姑苏城外寒山寺，夜半钟声到客船。"], from: "张继《枫桥夜泊》" },
-  { lines: ["清明时节雨纷纷，路上行人欲断魂。", "借问酒家何处有，牧童遥指杏花村。"], from: "杜牧《清明》" },
-  { lines: ["远上寒山石径斜，白云生处有人家。", "停车坐爱枫林晚，霜叶红于二月花。"], from: "杜牧《山行》" },
-  { lines: ["君问归期未有期，巴山夜雨涨秋池。", "何当共剪西窗烛，却话巴山夜雨时。"], from: "李商隐《夜雨寄北》" },
-  { lines: ["向晚意不适，驱车登古原。", "夕阳无限好，只是近黄昏。"], from: "李商隐《登乐游原》" },
-  { lines: ["少小离家老大回，乡音无改鬓毛衰。", "儿童相见不相识，笑问客从何处来。"], from: "贺知章《回乡偶书》" },
-  { lines: ["碧玉妆成一树高，万条垂下绿丝绦。", "不知细叶谁裁出，二月春风似剪刀。"], from: "贺知章《咏柳》" },
-  { lines: ["独怜幽草涧边生，上有黄鹂深树鸣。", "春潮带雨晚来急，野渡无人舟自横。"], from: "韦应物《滁州西涧》" },
-  { lines: ["自古逢秋悲寂寥，我言秋日胜春朝。", "晴空一鹤排云上，便引诗情到碧霄。"], from: "刘禹锡《秋词》" },
-  { lines: ["杨柳青青江水平，闻郎江上唱歌声。", "东边日出西边雨，道是无晴却有晴。"], from: "刘禹锡《竹枝词》" },
-  { lines: ["横看成岭侧成峰，远近高低各不同。", "不识庐山真面目，只缘身在此山中。"], from: "苏轼《题西林壁》" },
-  { lines: ["水光潋滟晴方好，山色空蒙雨亦奇。", "欲把西湖比西子，淡妆浓抹总相宜。"], from: "苏轼《饮湖上初晴后雨》" },
-  { lines: ["空山新雨后，天气晚来秋。", "明月松间照，清泉石上流。"], from: "王维《山居秋暝》" },
-  { lines: ["千里莺啼绿映红，水村山郭酒旗风。", "南朝四百八十寺，多少楼台烟雨中。"], from: "杜牧《江南春》" },
-  { lines: ["朱雀桥边野草花，乌衣巷口夕阳斜。", "旧时王谢堂前燕，飞入寻常百姓家。"], from: "刘禹锡《乌衣巷》" }
+  { lines: ["I wandered lonely as a cloud", "That floats on high o'er vales and hills."], from: "William Wordsworth, \"I Wandered Lonely as a Cloud\"" },
+  { lines: ["Shall I compare thee to a summer's day?", "Thou art more lovely and more temperate."], from: "William Shakespeare, Sonnet 18" },
+  { lines: ["Hope is the thing with feathers", "That perches in the soul,", "And sings the tune without the words,", "And never stops at all."], from: "Emily Dickinson, \"Hope\"" },
+  { lines: ["Two roads diverged in a wood, and I—", "I took the one less traveled by,", "And that has made all the difference."], from: "Robert Frost, \"The Road Not Taken\"" },
+  { lines: ["To see a World in a Grain of Sand", "And a Heaven in a Wild Flower,", "Hold Infinity in the palm of your hand", "And Eternity in an hour."], from: "William Blake, \"Auguries of Innocence\"" },
+  { lines: ["Because I could not stop for Death,", "He kindly stopped for me;", "The carriage held but just ourselves", "And Immortality."], from: "Emily Dickinson, \"Because I could not stop for Death\"" },
+  { lines: ["Tyger Tyger, burning bright,", "In the forests of the night;", "What immortal hand or eye,", "Could frame thy fearful symmetry?"], from: "William Blake, \"The Tyger\"" },
+  { lines: ["Season of mists and mellow fruitfulness,", "Close bosom-friend of the maturing sun."], from: "John Keats, \"To Autumn\"" },
+  { lines: ["Do not go gentle into that good night.", "Rage, rage against the dying of the light."], from: "Dylan Thomas, \"Do Not Go Gentle into That Good Night\"" },
+  { lines: ["I think that I shall never see", "A poem lovely as a tree."], from: "Joyce Kilmer, \"Trees\"" },
+  { lines: ["Water, water, every where,", "And all the boards did shrink;", "Water, water, every where,", "Nor any drop to drink."], from: "Samuel Taylor Coleridge, \"The Rime of the Ancient Mariner\"" },
+  { lines: ["Nature's first green is gold,", "Her hardest hue to hold.", "Her early leaf's a flower;", "But only so an hour."], from: "Robert Frost, \"Nothing Gold Can Stay\"" },
+  { lines: ["I celebrate myself, and sing myself,", "And what I assume you shall assume,", "For every atom belonging to me as good belongs to you."], from: "Walt Whitman, \"Song of Myself\"" },
+  { lines: ["Let us go then, you and I,", "When the evening is spread out against the sky", "Like a patient etherized upon a table."], from: "T. S. Eliot, \"The Love Song of J. Alfred Prufrock\"" },
+  { lines: ["Out of the night that covers me,", "Black as the pit from pole to pole,", "I thank whatever gods may be", "For my unconquerable soul."], from: "William Ernest Henley, \"Invictus\"" },
+  { lines: ["I must go down to the seas again, to the lonely sea and the sky,", "And all I ask is a tall ship and a star to steer her by."], from: "John Masefield, \"Sea-Fever\"" },
+  { lines: ["Look on my Works, ye Mighty, and despair!", "Nothing beside remains."], from: "Percy Bysshe Shelley, \"Ozymandias\"" },
+  { lines: ["O Captain! my Captain! our fearful trip is done,", "The ship has weather'd every rack, the prize we sought is won."], from: "Walt Whitman, \"O Captain! My Captain!\"" },
+  { lines: ["Earth has not anything to show more fair:", "Dull would he be of soul who could pass by", "A sight so touching in its majesty."], from: "William Wordsworth, \"Composed upon Westminster Bridge\"" },
+  { lines: ["Tomorrow, and tomorrow, and tomorrow,", "Creeps in this petty pace from day to day."], from: "William Shakespeare, Macbeth" },
+  { lines: ["How do I love thee? Let me count the ways.", "I love thee to the depth and breadth and height", "My soul can reach."], from: "Elizabeth Barrett Browning, Sonnet 43" },
+  { lines: ["Come live with me and be my love,", "And we will all the pleasures prove."], from: "Christopher Marlowe, \"The Passionate Shepherd to His Love\"" },
+  { lines: ["The woods are lovely, dark and deep,", "But I have promises to keep,", "And miles to go before I sleep."], from: "Robert Frost, \"Stopping by Woods on a Snowy Evening\"" },
+  { lines: ["Twinkle, twinkle, little star,", "How I wonder what you are!", "Up above the world so high,", "Like a diamond in the sky."], from: "Jane Taylor, \"The Star\"" },
+  { lines: ["Hope springs eternal in the human breast;", "Man never is, but always to be blest."], from: "Alexander Pope, \"An Essay on Man\"" },
+  { lines: ["Half a league, half a league,", "Half a league onward,", "All in the valley of Death", "Rode the six hundred."], from: "Alfred, Lord Tennyson, \"The Charge of the Light Brigade\"" },
+  { lines: ["I am the master of my fate,", "I am the captain of my soul."], from: "William Ernest Henley, \"Invictus\"" },
+  { lines: ["Beauty is truth, truth beauty,—that is all", "Ye know on earth, and all ye need to know."], from: "John Keats, \"Ode on a Grecian Urn\"" },
+  { lines: ["There is a pleasure in the pathless woods,", "There is a rapture on the lonely shore."], from: "Lord Byron, \"Childe Harold's Pilgrimage\"" },
+  { lines: ["The sea is calm tonight.", "The tide is full, the moon lies fair", "Upon the straits."], from: "Matthew Arnold, \"Dover Beach\"" }
 ];
 
 // ---------- helpers ----------
@@ -113,7 +115,8 @@ function resolveCity() {
   try { raw = new URLSearchParams(window.location.search).get("city") || ""; } catch (e) {}
   const key = raw.toLowerCase().replace(/[\s_\-]+/g, "");
   if (CITIES[key]) return CITIES[key];
-  for (const k in CITIES) if (CITIES[k].name === raw.trim()) return CITIES[k];
+  const t = raw.trim().toLowerCase();
+  for (const k in CITIES) if (CITIES[k].name.toLowerCase() === t) return CITIES[k];
   return CITIES[DEFAULT_CITY];
 }
 const CITY = resolveCity();
@@ -162,8 +165,8 @@ async function throttledLoad(key, fetcher, onData, onFail) {
 
 function renderClockAndDate() {
   const now = new Date();
-  setText("date-main", `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`);
-  setText("date-sub", `星期${WEEKDAYS[now.getDay()]}`);
+  setText("date-main", `${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`);
+  setText("date-sub", WEEKDAYS_LONG[now.getDay()]);
   setText("clock", `${pad(now.getHours())}:${pad(now.getMinutes())}`);
 }
 
@@ -172,7 +175,7 @@ function renderClockAndDate() {
 function renderCalendar() {
   const now = new Date();
   const year = now.getFullYear(), month = now.getMonth(), today = now.getDate();
-  setText("calendar-title", `日历 · ${year}年${month + 1}月`);
+  setText("calendar-title", `Calendar · ${MONTHS[month]} ${year}`);
   const firstDow = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrev = new Date(year, month, 0).getDate();
@@ -202,7 +205,7 @@ function renderPoem() {
   });
   const by = document.createElement("div");
   by.className = "poem-author";
-  by.textContent = "—— " + poem.from;
+  by.textContent = "— " + poem.from;
   box.appendChild(by);
 }
 
@@ -234,14 +237,14 @@ function fetchWeather() {
 
 function showWeather(data, fetchedAt) {
   const cur = data.current, d = data.daily;
-  setText("weather-now", `现在 ${Math.round(cur.temperature_2m)}°C · ${WEATHER_CODES[cur.weather_code] || "—"}`);
+  setText("weather-now", `Now ${Math.round(cur.temperature_2m)}°C · ${WEATHER_CODES[cur.weather_code] || "—"}`);
   const box = $("weather-days");
   box.textContent = "";
   for (let i = 1; i <= 3; i++) {
     const p = d.time[i].split("-");
     const dt = new Date(+p[0], +p[1] - 1, +p[2]);
     const row = document.createElement("div");
-    row.textContent = `${dt.getMonth() + 1}/${dt.getDate()} 周${WEEKDAYS[dt.getDay()]} ` +
+    row.textContent = `${dt.getMonth() + 1}/${dt.getDate()} ${WEEKDAYS[dt.getDay()]} ` +
       `${WEATHER_CODES[d.weather_code[i]] || "—"} ` +
       `${Math.round(d.temperature_2m_min[i])}~${Math.round(d.temperature_2m_max[i])}°C`;
     box.appendChild(row);
@@ -250,12 +253,12 @@ function showWeather(data, fetchedAt) {
 }
 
 function showWeatherFail() {
-  setText("weather-now", "天气暂时取不到，稍后自动重试。");
+  setText("weather-now", "Weather is unavailable right now. Retrying automatically.");
   $("weather-days").textContent = "";
 }
 
 function renderWeather() {
-  setText("weather-title", `天气 · ${CITY.name}`);
+  setText("weather-title", `Weather · ${CITY.name}`);
   return throttledLoad("einkanywhere:weather:" + CITY.name, fetchWeather, showWeather, showWeatherFail);
 }
 
@@ -263,7 +266,7 @@ function renderWeather() {
 
 function fetchNews() {
   // Public RSS-to-JSON relay; swap the feed URL for any RSS source.
-  const feed = encodeURIComponent("https://news.google.com/rss?hl=zh-CN&gl=CN&ceid=CN:zh-Hans");
+  const feed = encodeURIComponent("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en");
   return fetchJSON(`https://api.rss2json.com/v1/api.json?rss_url=${feed}`).then(function (data) {
     const titles = ((data && data.items) || [])
       .map(function (it) { return it && typeof it.title === "string" ? it.title.trim() : ""; })
@@ -298,9 +301,9 @@ function stamp(name, t) {
   if (t) stamps[name] = t;
   const fmt = function (ms) { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
   const parts = [];
-  if (stamps.weather) parts.push(`天气 ${fmt(stamps.weather)}`);
-  if (stamps.news) parts.push(`新闻 ${fmt(stamps.news)}`);
-  setText("updated-at", parts.length ? "数据更新 " + parts.join(" · ") : "");
+  if (stamps.weather) parts.push(`Weather ${fmt(stamps.weather)}`);
+  if (stamps.news) parts.push(`News ${fmt(stamps.news)}`);
+  setText("updated-at", parts.length ? "Updated " + parts.join(" · ") : "");
 }
 
 // ---------- scheduling ----------
