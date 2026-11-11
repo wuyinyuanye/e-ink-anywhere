@@ -1,0 +1,1 @@
+{"description":"Runs a Node syntax check on app.js whenever it is edited, so a broken edit is caught before it reaches the board.","name":"Check JS syntax on save","then":{"command":"node --check app.js","type":"runCommand"},"version":"1.0.0","when":{"patterns":["app.js"],"type":"fileEdited"}}

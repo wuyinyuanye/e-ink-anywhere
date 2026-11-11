@@ -1,0 +1,113 @@
+/* E-Ink Anywhere — e-paper aesthetic: pure black on white, no colour,
+   no animation, no gradients, no shadows. Sizes chosen for ~1 m viewing. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: #fff;
+  color: #000;
+  font-family: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Times New Roman", Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.board {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px 20px 10px;
+}
+
+.board-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px 16px;
+  border-bottom: 4px solid #000;
+  padding-bottom: 10px;
+}
+
+.date-main   { font-size: 40px; font-weight: 700; letter-spacing: 1px; line-height: 1.15; }
+.date-sub    { font-size: 24px; margin-top: 2px; }
+.clock       { font-size: 64px; font-weight: 700; text-align: right; line-height: 1; }
+.clock-label { font-size: 16px; text-align: right; margin-top: 2px; }
+
+/* Two columns at 800px: weather+news | poem+calendar */
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 20px;
+}
+.col { min-width: 0; }
+.col-right { border-left: 2px solid #000; padding-left: 20px; }
+
+.panel {
+  border-bottom: 2px solid #000;
+  padding: 10px 0 12px;
+}
+.col .panel:last-child { border-bottom: none; }
+
+.panel h2 {
+  font-size: 20px;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+
+.weather-now  { font-size: 32px; font-weight: 700; line-height: 1.25; }
+.weather-days { margin-top: 6px; font-size: 20px; line-height: 1.5; }
+
+.news-list { list-style: none; counter-reset: news; }
+.news-list li {
+  counter-increment: news;
+  font-size: 20px;
+  line-height: 1.4;
+  padding: 4px 0;
+  border-bottom: 1px dotted #000;
+  overflow-wrap: anywhere;
+}
+.news-list li::before { content: counter(news) ". "; font-weight: 700; }
+.news-list li:last-child { border-bottom: none; }
+
+.poem { font-size: 24px; line-height: 1.6; text-align: center; padding: 2px 0; overflow-wrap: anywhere; }
+.poem .poem-author { font-size: 20px; margin-top: 4px; }
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  font-size: 20px;
+  text-align: center;
+}
+.calendar .dow   { font-weight: 700; border-bottom: 2px solid #000; padding: 2px 0; }
+.calendar .day   { padding: 3px 0; border: 1px solid #fff; }
+.calendar .today { background: #000; color: #fff; font-weight: 700; border-color: #000; }
+/* Adjacent-month filler: pure black, smaller, dotted frame (no grey, no opacity) */
+.calendar .dim   { font-size: 16px; border: 1px dotted #000; padding: 5px 0; }
+
+.board-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 16px;
+  padding-top: 8px;
+  border-top: 2px solid #000;
+}
+
+/* Phones / narrow windows: single column, still no horizontal scroll */
+@media (max-width: 720px) {
+  .board { padding: 12px 14px 10px; }
+  .columns { grid-template-columns: minmax(0, 1fr); }
+  .col-right { border-left: none; padding-left: 0; border-top: 2px solid #000; }
+  .col-left .panel:last-child { border-bottom: none; }
+  .date-main { font-size: 32px; }
+  .date-sub  { font-size: 20px; }
+  .clock     { font-size: 52px; }
+  .weather-now { font-size: 28px; }
+}
+@media (max-width: 380px) {
+  .date-main { font-size: 28px; }
+  .clock     { font-size: 44px; }
+  .poem      { font-size: 21px; }
+}

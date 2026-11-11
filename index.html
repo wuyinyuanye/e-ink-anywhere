@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Ink Anywhere — 墨水屏风格网页看板</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="board">
+    <header class="board-header">
+      <div class="date-block">
+        <div id="date-main" class="date-main">----年--月--日</div>
+        <div id="date-sub" class="date-sub">星期-</div>
+      </div>
+      <div class="clock-block">
+        <div id="clock" class="clock">--:--</div>
+        <div class="clock-label">本地时间</div>
+      </div>
+    </header>
+
+    <div class="columns">
+      <div class="col col-left">
+        <section class="panel weather-panel">
+          <h2 id="weather-title">天气 · 上海</h2>
+          <div id="weather-now" class="weather-now">正在取天气…</div>
+          <div id="weather-days" class="weather-days"></div>
+        </section>
+
+        <section class="panel news-panel">
+          <h2>今日要闻</h2>
+          <ol id="news-list" class="news-list">
+            <li>正在取新闻…</li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="col col-right">
+        <section class="panel poem-panel">
+          <h2>每日一诗</h2>
+          <div id="poem" class="poem"></div>
+        </section>
+
+        <section class="panel calendar-panel">
+          <h2 id="calendar-title">日历</h2>
+          <div id="calendar" class="calendar"></div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="board-footer">
+      <span>E-Ink Anywhere · 低刷新 · 纸面感</span>
+      <span id="updated-at"></span>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
